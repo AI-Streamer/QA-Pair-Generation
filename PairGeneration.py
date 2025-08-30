@@ -4,7 +4,7 @@ from typing import List
 from tqdm import tqdm
 from langchain_community.chat_models.tongyi import ChatTongyi
 from langchain_core.prompts import ChatPromptTemplate
-from langchain_core.pydantic_v1 import BaseModel, Field
+from pydantic import BaseModel, Field
 from langchain_core.output_parsers import JsonOutputParser
 from langchain_core.runnables import RunnableSequence
 from langchain_community.document_loaders import UnstructuredFileLoader
@@ -15,11 +15,15 @@ from langchain_text_splitters import RecursiveCharacterTextSplitter
 #     base_url="https://dashscope.aliyuncs.com/compatible-mode/v1",
 # )
 
+with open("System-Prompt.txt", "r") as file:
+    QA_PAIRS_SYSTEM_PROMPT = file.read().replace("\n", " ")
+with open("Human-Prompt.txt", "r") as file:
+    QA_PAIRS_HUMAN_PROMPT = file.read().replace("\n", " ")
 
 class QaPair(BaseModel):
-    instruction: str = Field(description="问题内容")
-    # "input": "人类输入（选填）",
-    input: str = Field(description="人类输入（针对问题内容,选填）")
+    instruction: str = Field(description="系统指令")
+    # "input": "人类输入",
+    input: str = Field(description="人类输入（针对问题内容）")
     output: str = Field(description="问题的回答")
 
 
@@ -38,33 +42,32 @@ def create_chain():
     prompt = ChatPromptTemplate.from_messages(
         [("system", QA_PAIRS_SYSTEM_PROMPT), ("human", QA_PAIRS_HUMAN_PROMPT)]
     )
-    llm = ChatTongyi(model="qwen-plus-latest").with_structured_output(
-        method="json_mode"
-    )
+    llm = ChatTongyi(model="qwen-max-latest")
     parser = JsonOutputParser(pydantic_object=QaPairs)
-    chain = RunnableSequence([prompt, llm, parser])
+    chain = RunnableSequence(prompt, llm, parser)
     return chain
 
 
 def main():
     chain = create_chain()
-    documents = split_document("data/12.txt")
+    documents = split_document("/home/red/Documents/data/text/script.txt")
 
     # for i, doc in enumerate(documents):
     #   print(f"Document chunk {i + 1}:")
     #   print(doc.page_content)
     #   print("-" * 80)
 
-    with open("dataset.json", "a", encoding="utf-8") as f:
-        bar = tqdm(total=len(documents))
-        for idx, doc in enumerate(documents):
-            print(doc.page_content)
+    with open("dataset-max.json", "a", encoding="utf-8") as f:
+        for idx, doc in enumerate(tqdm(documents)):
+            # print(f"Processing document chunk {idx + 1}")
+            try:
+                out = chain.invoke({"text": doc.page_content})
+                # print(f"API response for chunk {idx + 1}: {out}")
 
-            print(f"Processing document chunk {idx + 1}")
-            out = chain.invoke({"text": doc.page_content})
-            print(f"API response for chunk {idx + 1}: {out}")
+                f.write(json.dumps(out, ensure_ascii=False, indent=2) + ",\n")
+                f.flush()
+            except:
+                continue
 
-            f.write(json.dumps(out, ensure_ascii=False, indent=2) + ",\n")
-            f.flush()
-            bar.update(1)
-            bar.close()
+if __name__ == "__main__":
+    main()
