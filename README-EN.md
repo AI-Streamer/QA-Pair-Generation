@@ -2,6 +2,8 @@
 
 Utilize LLM to generate the QA pairs from plain texts for style tranferring.
 
+\[EN|[ZH](README-ZH.md)\]
+
 ## Usage
 
 **Please adjust VarMap.py file in the corresponding directory before generating QA pairs.**
