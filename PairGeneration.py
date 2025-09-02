@@ -9,11 +9,7 @@ from langchain_core.output_parsers import JsonOutputParser
 from langchain_core.runnables import RunnableSequence
 from langchain_community.document_loaders import UnstructuredFileLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
-
-# client = OpenAI(
-#     api_key=os.getenv("DASHSCOPE_API_KEY"),
-#     base_url="https://dashscope.aliyuncs.com/compatible-mode/v1",
-# )
+from VarMap import TEXT_FILE_ADDRESS, DATASET_ADDRESS
 
 with open("System-Prompt.txt", "r") as file:
     QA_PAIRS_SYSTEM_PROMPT = file.read().replace("\n", " ")
@@ -50,14 +46,14 @@ def create_chain():
 
 def main():
     chain = create_chain()
-    documents = split_document("/home/red/Documents/data/text/script.txt")
+    documents = split_document(TEXT_FILE_ADDRESS)
 
     # for i, doc in enumerate(documents):
     #   print(f"Document chunk {i + 1}:")
     #   print(doc.page_content)
     #   print("-" * 80)
 
-    with open("dataset-max.json", "a", encoding="utf-8") as f:
+    with open(DATASET_ADDRESS, "a", encoding="utf-8") as f:
         for idx, doc in enumerate(tqdm(documents)):
             # print(f"Processing document chunk {idx + 1}")
             try:
