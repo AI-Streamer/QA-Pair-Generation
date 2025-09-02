@@ -2,6 +2,8 @@
 
 Utilize LLM to generate the QA pairs from plain texts for style tranferring.
 
+[Example Vtuber style QA pairs](https://huggingface.co/datasets/REDact123/Vup-QA-Pairs)
+
 \[EN|[ZH](README-ZH.md)\]
 
 ## Usage
@@ -23,4 +25,4 @@ Currently, the prompts are in simplified Chinese since the plain text is in Chin
 
 - [ ] Google Colab inference example.
 - [ ] Add options for API platform and English prompt.
-- [ ] Post the generate QA pairs.
+- [x] Post the generate QA pairs.

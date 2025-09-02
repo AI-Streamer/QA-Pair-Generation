@@ -2,6 +2,8 @@
 
 利用大语言模型（LLM）从原始文本生成问答对，以进行语言风格迁移。
 
+[生成的虚拟主播风格问答对](https://huggingface.co/datasets/REDact123/Vup-QA-Pairs)
+
 \[[EN](README.md)|ZH\]
 
 ## 使用方法
@@ -21,6 +23,6 @@
 
 ## 未来计划
 
-- [ ] Google Colab 推理示例。
+- [ ] Google Colab 示例。
 - [ ] 添加 API 平台和英文提示语的选项。
-- [ ] 发布生成的问答对。
+- [x] 发布生成的问答对。
